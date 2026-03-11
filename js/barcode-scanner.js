@@ -34,50 +34,37 @@ if(this.isScanning) return
 
 try{
 
-const cameras=await Html5Qrcode.getCameras()
+const cameras = await Html5Qrcode.getCameras();
 
-if(!cameras || cameras.length===0){
-throw new Error("No camera found")
+if (!cameras || cameras.length === 0) {
+    alert("Không tìm thấy camera");
+    return;
 }
 
-let cameraId=cameras[0].id
+// tìm camera sau
+let cameraId = cameras[cameras.length - 1].id;
 
-for(let cam of cameras){
+for (let i = 0; i < cameras.length; i++) {
 
-if(cam.label.toLowerCase().includes("back")||
-cam.label.toLowerCase().includes("rear")||
-cam.label.toLowerCase().includes("environment")){
+    const label = cameras[i].label.toLowerCase();
 
-cameraId=cam.id
-break
+    if (
+        label.includes("back") ||
+        label.includes("rear") ||
+        label.includes("environment")
+    ) {
+        cameraId = cameras[i].id;
+        break;
+    }
 
-}
-
-}
-
-const config={
-fps:25,
-qrbox:function(width,height){
-
-const size=Math.min(width,height)*0.85
-
-return{
-width:size,
-height:size
-}
-
-},
-aspectRatio:1.777,
-disableFlip:true
 }
 
 await this.scanner.start(
-cameraId,
-config,
-this.handleScanSuccess.bind(this),
-this.handleScanError.bind(this)
-)
-
+    cameraId,
+    config,
+    this.handleScanSuccess.bind(this),
+    this.handleScanError.bind(this)
+);
 this.isScanning=true
 
 document.getElementById("startScanBtn").style.display="none"
