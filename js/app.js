@@ -8,7 +8,17 @@ class InventoryApp {
         this.init();
     }
 async function updateStock(barcode,change){
+const scanner=new BarcodeScanner()
 
+scanner.initialize()
+
+document.getElementById("startScanBtn").onclick=()=>{
+scanner.start()
+}
+
+document.getElementById("stopScanBtn").onclick=()=>{
+scanner.stop()
+}
 const url=API_URL+
 "?action=updateQuantity"+
 "&barcode="+barcode+
