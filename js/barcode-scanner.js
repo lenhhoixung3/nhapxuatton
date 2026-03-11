@@ -1,154 +1,223 @@
-// Barcode Scanner Module
 class BarcodeScanner {
-    constructor(onScanSuccess, onScanError) {
-        this.onScanSuccess = onScanSuccess;
-        this.onScanError = onScanError;
-        this.scanner = null;
-        this.isScanning = false;
-    }
 
-   async initialize() {
-    try {
+constructor(onScanSuccess,onScanError){
 
-        // xin quyền camera
-        await navigator.mediaDevices.getUserMedia({ video: true });
-
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasCamera = devices.some(device => device.kind === 'videoinput');
-
-        if (!hasCamera) {
-            throw new Error('No camera found');
-        }
-
-        this.scanner = new Html5Qrcode("reader");
-
-        return true;
-
-    } catch (error) {
-
-        console.error('Scanner initialization failed:', error);
-
-        return false;
-
-    }
-}
-
-    async start() {
-
-    if (this.isScanning) {
-        return;
-    }
-
-    try {
-
-        const config = {
-            fps: 10,
-            qrbox: 250,
-            aspectRatio: 1.777
-        };
-
-        // lấy danh sách camera
-        const cameras = await Html5Qrcode.getCameras();
-
-        if (!cameras || cameras.length === 0) {
-            throw new Error("No camera found");
-        }
-
-        // camera sau (thường là camera cuối)
-        const cameraId = cameras[cameras.length - 1].id;
-
-        await this.scanner.start(
-            cameraId,
-            config,
-            this.handleScanSuccess.bind(this),
-            this.handleScanError.bind(this)
-        );
-
-        this.isScanning = true;
-
-        document.getElementById('startScanBtn').style.display = 'none';
-        document.getElementById('stopScanBtn').style.display = 'block';
-
-    } catch (error) {
-
-        console.error('Failed to start scanner:', error);
-
-        if (this.onScanError) {
-            this.onScanError(error.message);
-        }
-
-    }
+this.onScanSuccess=onScanSuccess
+this.onScanError=onScanError
+this.scanner=null
+this.isScanning=false
 
 }
-    stop() {
-        if (this.scanner && this.isScanning) {
-            this.scanner.stop()
-                .then(() => {
-                    this.isScanning = false;
-                    document.getElementById('startScanBtn').style.display = 'block';
-                    document.getElementById('stopScanBtn').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Failed to stop scanner:', error);
-                });
-        }
-    }
 
-    handleScanSuccess(decodedText, decodedResult) {
-        // Vibrate if supported
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
-        }
+async initialize(){
 
-        // Play beep sound
-        this.playBeep();
+try{
 
-        if (this.onScanSuccess) {
-            this.onScanSuccess(decodedText);
-        }
+await navigator.mediaDevices.getUserMedia({video:true})
 
-        // Optional: Auto-stop after successful scan
-        // this.stop();
-    }
+this.scanner=new Html5Qrcode("reader")
 
-    handleScanError(error) {
-        // Ignore common errors that don't affect functionality
-        if (error.includes('No MultiFormat Readers were able to detect')) {
-            return;
-        }
-        
-        console.warn('Scan error:', error);
-        if (this.onScanError) {
-            this.onScanError(error);
-        }
-    }
+return true
 
-    playBeep() {
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+}catch(error){
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+console.error(error)
+return false
 
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+}
 
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
+}
 
-            // Clean up
-            oscillator.onended = () => {
-                oscillator.disconnect();
-                gainNode.disconnect();
-            };
-        } catch (error) {
-            console.log('Beep not supported');
-        }
-    }
+async start(){
 
-    isScanningActive() {
-        return this.isScanning;
-    }
+if(this.isScanning) return
+
+try{
+
+const cameras=await Html5Qrcode.getCameras()
+
+if(!cameras || cameras.length===0){
+throw new Error("No camera found")
+}
+
+let cameraId=cameras[0].id
+
+for(let cam of cameras){
+
+if(cam.label.toLowerCase().includes("back")||
+cam.label.toLowerCase().includes("rear")||
+cam.label.toLowerCase().includes("environment")){
+
+cameraId=cam.id
+break
+
+}
+
+}
+
+const config={
+fps:25,
+qrbox:function(width,height){
+
+const size=Math.min(width,height)*0.85
+
+return{
+width:size,
+height:size
+}
+
+},
+aspectRatio:1.777,
+disableFlip:true
+}
+
+await this.scanner.start(
+cameraId,
+config,
+this.handleScanSuccess.bind(this),
+this.handleScanError.bind(this)
+)
+
+this.isScanning=true
+
+document.getElementById("startScanBtn").style.display="none"
+document.getElementById("stopScanBtn").style.display="block"
+
+}catch(error){
+
+console.error(error)
+
+if(this.onScanError){
+this.onScanError(error.message)
+}
+
+}
+
+}
+
+stop(){
+
+if(this.scanner && this.isScanning){
+
+this.scanner.stop()
+
+this.isScanning=false
+
+document.getElementById("startScanBtn").style.display="block"
+document.getElementById("stopScanBtn").style.display="none"
+
+}
+
+}
+
+async handleScanSuccess(barcode){
+
+if(navigator.vibrate){
+navigator.vibrate(200)
+}
+
+this.playBeep()
+
+document.getElementById("scanResult").innerHTML=
+"<div class='scan-box'>Barcode: "+barcode+"</div>"
+
+await this.lookupProduct(barcode)
+
+}
+
+handleScanError(err){
+
+if(err.includes("No MultiFormat")){
+return
+}
+
+console.warn(err)
+
+}
+
+async lookupProduct(barcode){
+
+try{
+
+const url=API_URL+"?action=getByBarcode&barcode="+barcode
+
+const res=await fetch(url)
+
+const data=await res.json()
+
+if(data.success){
+
+this.showProduct(data.data)
+
+}else{
+
+this.showAddProduct(barcode)
+
+}
+
+}catch(e){
+
+console.error(e)
+
+}
+
+}
+
+showProduct(product){
+
+const html=`
+
+<div class="product-card">
+
+<h3>${product.productName}</h3>
+
+<p>Barcode: ${product.barcode}</p>
+
+<p>Stock: ${product.quantity}</p>
+
+<button onclick="updateStock('${product.barcode}',1)">➕ Nhập kho</button>
+
+<button onclick="updateStock('${product.barcode}',-1)">➖ Xuất kho</button>
+
+</div>
+
+`
+
+document.getElementById("scanResult").innerHTML=html
+
+}
+
+showAddProduct(barcode){
+
+document.getElementById("modalBarcode").value=barcode
+document.getElementById("modalBarcodeDisplay").value=barcode
+
+document.getElementById("productModal").style.display="block"
+
+}
+
+playBeep(){
+
+try{
+
+const ctx=new(window.AudioContext||window.webkitAudioContext)()
+
+const osc=ctx.createOscillator()
+
+const gain=ctx.createGain()
+
+osc.connect(gain)
+gain.connect(ctx.destination)
+
+osc.frequency.value=800
+
+gain.gain.value=0.5
+
+osc.start()
+osc.stop(ctx.currentTime+0.1)
+
+}catch(e){}
+
+}
+
 }
