@@ -25,6 +25,89 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
+body{
+    font-family: Arial, sans-serif;
+    margin:0;
+    background:#f5f6fa;
+}
+
+/* header */
+
+.app-header{
+    background:#4CAF50;
+    color:white;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo-area{
+    display:flex;
+    align-items:center;
+}
+
+.logo{
+    width:40px;
+    margin-right:10px;
+}
+
+/* navigation */
+
+.main-nav{
+    display:flex;
+    justify-content:space-around;
+    background:white;
+    border-bottom:1px solid #ddd;
+}
+
+.nav-btn{
+    padding:12px;
+    border:none;
+    background:none;
+    font-size:16px;
+}
+
+.nav-btn.active{
+    color:#4CAF50;
+    border-bottom:3px solid #4CAF50;
+}
+
+/* cards */
+
+.stat-card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+/* buttons */
+
+.btn-primary{
+    background:#4CAF50;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+}
+
+.btn-secondary{
+    background:#ddd;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+}
+
+/* scanner */
+
+.scanner-container{
+    background:black;
+    border-radius:10px;
+    overflow:hidden;
+}
+
 #app {
     max-width: 480px;
     margin: 0 auto;
