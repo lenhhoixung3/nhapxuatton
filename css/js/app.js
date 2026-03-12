@@ -410,6 +410,29 @@ class InventoryApp {
     }
 }
 
+const scanner = new BarcodeScanner(
+    (barcode) => {
+        console.log("Scanned:", barcode);
+    },
+    (error) => {
+        console.log("Scan error:", error);
+    }
+);
+
+await scanner.initialize();
+
+document.getElementById("startScanBtn").onclick = () => {
+    scanner.start();
+};
+
+document.getElementById("stopScanBtn").onclick = () => {
+    scanner.stop();
+};
+
+
+
+
+
 // Utility functions
 function debounce(func, wait) {
     let timeout;
