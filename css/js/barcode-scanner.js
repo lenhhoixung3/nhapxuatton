@@ -1,6 +1,36 @@
 // Barcode Scanner Module
 
+const cameras = await Html5Qrcode.getCameras();
 
+if (!cameras || cameras.length === 0) {
+    alert("Không tìm thấy camera");
+    return;
+}
+
+// tìm camera sau
+let cameraId = cameras[cameras.length - 1].id;
+
+for (let i = 0; i < cameras.length; i++) {
+
+    const label = cameras[i].label.toLowerCase();
+
+    if (
+        label.includes("back") ||
+        label.includes("rear") ||
+        label.includes("environment")
+    ) {
+        cameraId = cameras[i].id;
+        break;
+    }
+
+}
+
+await this.scanner.start(
+    cameraId,
+    config,
+    this.handleScanSuccess.bind(this),
+    this.handleScanError.bind(this)
+);
 const cameras = await Html5Qrcode.getCameras();
 
 if (cameras && cameras.length) {
