@@ -10,7 +10,10 @@
     --border-radius: 12px;
     --spacing: 16px;
 }
-
+#reader {
+    border: 4px solid #00ff88;
+    border-radius: 10px;
+}
 * {
     margin: 0;
     padding: 0;
