@@ -1,5 +1,5 @@
 // Google Sheets API Integration
-const GOOGLE_APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+const GOOGLE_APPS_SCRIPT_URL = 'https://docs.google.com/spreadsheets/d/1-MSYrLwDPONENoRfm2gvXpv0M7NIlpm8IkdOZclBZPw/edit?gid=0#gid=0';
 
 class GoogleSheetsAPI {
     constructor() {
