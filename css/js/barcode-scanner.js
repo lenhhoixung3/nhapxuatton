@@ -148,3 +148,24 @@ class BarcodeScanner {
         return this.isScanning;
     }
 }
+const scanner = new Html5Qrcode("reader");
+
+document.getElementById("startScanBtn").onclick = () => {
+
+scanner.start(
+{ facingMode: "environment" },
+{
+fps: 10,
+qrbox: 250
+},
+(decodedText) => {
+
+console.log("Barcode:", decodedText);
+
+}
+);
+
+};
+document.getElementById("stopScanBtn").onclick = () => {
+scanner.stop();
+};
