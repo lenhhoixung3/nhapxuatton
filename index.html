@@ -38,6 +38,31 @@
             <button class="nav-btn" data-view="inventory" data-i18n="inventory">📦 Inventory</button>
             <button class="nav-btn" data-view="scanner" data-i18n="scanner">📷 Scanner</button>
         </nav>
+        <div class="nav-tabs">
+
+<button onclick="showPage('dashboard')" id="tab-dashboard">
+📊 Dashboard
+</button>
+
+<button onclick="showPage('inventory')" id="tab-inventory">
+📦 Inventory
+</button>
+
+<button onclick="showPage('scanner')" id="tab-scanner">
+📷 Scanner
+</button>
+<div id="dashboardPage">
+    <!-- dashboard -->
+</div>
+
+<div id="inventoryPage" style="display:none;">
+    <!-- inventory -->
+</div>
+
+<div id="scannerPage" style="display:none;">
+    <!-- scanner -->
+</div>
+</div>
         <!-- Dashboard View -->
         <div id="dashboard-view" class="view active">
             <div class="stats-grid">
