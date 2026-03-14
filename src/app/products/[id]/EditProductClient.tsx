@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateProduct, deleteProduct } from './actions'
-import { canDeleteProducts, Role } from '@/lib/auth-utils'
+import { canDeleteProducts } from '@/lib/auth-utils'
+import type { SessionUser } from '@/lib/auth'
 
 interface Product {
   id: string
@@ -15,7 +16,12 @@ interface Product {
   allowDuplicate: boolean
 }
 
-export default function EditProductClient({ product, currentRole }: { product: Product, currentRole: Role }) {
+interface EditProductClientProps {
+  product: Product
+  currentUser: SessionUser
+}
+
+export default function EditProductClient({ product, currentUser }: EditProductClientProps) {
   const router = useRouter()
   const [form, setForm] = useState({
     name: product.name,
@@ -148,8 +154,8 @@ export default function EditProductClient({ product, currentRole }: { product: P
         </button>
       </form>
 
-      {/* Xóa sản phẩm (ADMIN only) */}
-      {canDeleteProducts(currentRole) && (
+      {/* Xóa sản phẩm (ADMIN or with permission) */}
+      {canDeleteProducts(currentUser) && (
         <div className="mt-8 pt-6 border-t border-gray-100">
             <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide">Vùng nguy hiểm</p>
             {!showDeleteConfirm ? (

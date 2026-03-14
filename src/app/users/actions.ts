@@ -27,3 +27,14 @@ export async function updateUserPermissions(id: string, data: {
   })
   revalidatePath('/users')
 }
+
+export async function updateUserRole(id: string, role: string) {
+  const user = await getCurrentUser()
+  if (!user || !canManageUsers(user)) throw new Error('Không có quyền.')
+  
+  await (prisma as any).user.update({
+    where: { id },
+    data: { role }
+  })
+  revalidatePath('/users')
+}
